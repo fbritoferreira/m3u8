@@ -1,6 +1,60 @@
 /**
  * Exports the M3U8Parser class responsible for parsing M3U8 playlist files.
- * @module parser
+ * @module M3U8Parser
+ */
+
+
+/**
+ * Example of parsing a raw M3U8 playlist from a string.
+ *
+ * This demonstrates how to initialize the M3U8Parser with a raw playlist string
+ * and retrieve the parsed playlist and filtered groups.
+ *
+ * @example
+ * const rawPlaylist = `#EXTM3U
+ * #EXTINF:-1,Example Channel
+ * http://example.com/channel.m3u8
+ * #EXTGRP:Group A
+ * http://example.com/channel2.m3u8
+ * #EXTINF:-1,Another Channel
+ * http://example.com/channel3.m3u8
+ * `;
+ *
+ * const parser = new M3U8Parser({ playlist: rawPlaylist });
+ *
+ * // Get the full parsed playlist
+ * const fullPlaylist = parser.getPlaylist();
+ * console.log(fullPlaylist);
+ *
+ * // Filter the playlist by group "Group A"
+ * const groupAPlaylist = parser.getPlaylistByGroup("Group A");
+ * console.log(groupAPlaylist);
+ */
+
+
+/**
+ * Example of fetching and parsing an M3U8 playlist from a URL.
+ *
+ * This demonstrates how to initialize the M3U8Parser with a URL, fetch the playlist,
+ * parse it, and then filter by group.
+ *
+ * @example
+ * const url = 'https://example.com/path/to/playlist.m3u8';
+ *
+ * const parser = new M3U8Parser({ url });
+ *
+ * // Wait for the playlist to be fetched and parsed
+ * parser.fetchPlaylist({ url }).then(() => {
+ *     // Get the full parsed playlist
+ *     const fullPlaylist = parser.getPlaylist();
+ *     console.log(fullPlaylist);
+ *
+ *     // Filter the playlist by group "Sports"
+ *     const sportsPlaylist = parser.getPlaylistByGroup("Sports");
+ *     console.log(sportsPlaylist);
+ * }).catch((error) => {
+ *     console.error('Failed to fetch or parse the playlist:', error);
+ * });
  */
 export { M3U8Parser } from "./parser.ts";
 
