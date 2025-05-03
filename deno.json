@@ -1,6 +1,6 @@
 {
     "name": "@fbritoferreira/m3u8",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "license": "MIT",
     "tasks": {
         "test": "deno test -A",
@@ -13,16 +13,7 @@
         "zod": "npm:zod@^3.24.3"
     },
     "exports": "./src/index.ts",
-    "publish": {
-        "exclude": [
-            "test/"
-        ]
-    },
     "lint": {
-        "exclude": [
-            "./public/",
-            "./dist/"
-        ],
         "rules": {
             "tags": [
                 "recommended"
