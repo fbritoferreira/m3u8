@@ -1,16 +1,14 @@
 /**
- * Exports the M3U8Parser class responsible for parsing M3U8 playlist files.
+ * M3U8Parser - A class designed to parse and filter M3U8 playlists.
+ *
+ * This class allows you to load M3U8 playlists from a raw string or fetch them from a URL.
+ * The parser can be used to access, filter, and manipulate the playlist data,
+ * making it ideal for working with M3U8 streams.
+ *
  * @module M3U8Parser
- */
-
-
-/**
- * Example of parsing a raw M3U8 playlist from a string.
  *
- * This demonstrates how to initialize the M3U8Parser with a raw playlist string
- * and retrieve the parsed playlist and filtered groups.
- *
- * @example
+ * @example Example of parsing a raw M3U8 playlist from a string:
+ * ```ts
  * const rawPlaylist = `#EXTM3U
  * #EXTINF:-1,Example Channel
  * http://example.com/channel.m3u8
@@ -19,7 +17,6 @@
  * #EXTINF:-1,Another Channel
  * http://example.com/channel3.m3u8
  * `;
- *
  * const parser = new M3U8Parser({ playlist: rawPlaylist });
  *
  * // Get the full parsed playlist
@@ -29,18 +26,11 @@
  * // Filter the playlist by group "Group A"
  * const groupAPlaylist = parser.getPlaylistByGroup("Group A");
  * console.log(groupAPlaylist);
- */
-
-
-/**
- * Example of fetching and parsing an M3U8 playlist from a URL.
+ * ```
  *
- * This demonstrates how to initialize the M3U8Parser with a URL, fetch the playlist,
- * parse it, and then filter by group.
- *
- * @example
+ * @example Example of fetching and parsing an M3U8 playlist from a URL:
+ * ```ts
  * const url = 'https://example.com/path/to/playlist.m3u8';
- *
  * const parser = new M3U8Parser({ url });
  *
  * // Wait for the playlist to be fetched and parsed
@@ -55,6 +45,7 @@
  * }).catch((error) => {
  *     console.error('Failed to fetch or parse the playlist:', error);
  * });
+ * ```
  */
 export { M3U8Parser } from "./parser.ts";
 

@@ -21,9 +21,11 @@ import {
  * @param {string} [params.playlist] - The raw M3U8 playlist content.
  * @param {string} [params.url] - The URL to fetch the M3U8 playlist from.
  *
- * @example
+ * @example Parsing local and remove playlists
+ * ```ts
  * const parser = new M3U8Parser({ playlist: "./playlist.m3u8" });
  * const parser = new M3U8Parser({ url: "http://example.com/playlist.m3u8" });
+ * ```
  *
  * @throws {Error} If the playlist is not valid or fetch fails.
  */
