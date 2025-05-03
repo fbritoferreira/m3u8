@@ -10,17 +10,22 @@ import {
 } from "./types.ts";
 
 /**
- * M3U8Parser
+ * M3U8Parser class is responsible for parsing and filtering M3U8 playlists.
+ *
+ * It can parse raw M3U8 data or fetch the playlist from a provided URL.
+ *
  * @class
- * @classdesc M3U8Parser class is responsible for parsing and filtering m3u8 playlists
- * @param {string} playlist - m3u8 playlist
- * @param {string} url - url to fetch m3u8 playlist
+ * @classdesc M3U8Parser class provides functionality to parse, filter, and retrieve M3U8 playlist data.
+ *
+ * @param {Object} params - The parameters for initializing the parser.
+ * @param {string} [params.playlist] - The raw M3U8 playlist content.
+ * @param {string} [params.url] - The URL to fetch the M3U8 playlist from.
+ *
  * @example
  * const parser = new M3U8Parser({ playlist: "./playlist.m3u8" });
  * const parser = new M3U8Parser({ url: "http://example.com/playlist.m3u8" });
- * @returns {M3U8Parser}
- * @throws {Error} - if playlist is not valid
- * @throws {Error} - if failed to fetch playlist
+ *
+ * @throws {Error} If the playlist is not valid or fetch fails.
  */
 export class M3U8Parser {
     public rawPlaylist = "";
@@ -30,6 +35,13 @@ export class M3U8Parser {
     public header: PlaylistHeader = {} as PlaylistHeader;
     public groups: Set<string> = new Set();
 
+    /**
+     * Creates an instance of M3U8Parser.
+     *
+     * @param {Object} params - The parameters for initializing the parser.
+     * @param {string} [params.playlist] - The raw M3U8 playlist content.
+     * @param {string} [params.url] - The URL to fetch the M3U8 playlist from.
+     */
     constructor({ playlist, url }: { playlist?: string; url?: string }) {
         if (playlist) {
             this.rawPlaylist = playlist;
@@ -41,6 +53,15 @@ export class M3U8Parser {
         }
     }
 
+    /**
+     * Parses the raw M3U8 playlist content and populates the items and header.
+     *
+     * @private
+     * @param {string} raw - The raw playlist content.
+     * @returns {void}
+     *
+     * @throws {Error} If the playlist is not valid.
+     */
     private parse(raw: string): void {
         let i = 0;
         const lines = raw.split("\n").map(this.parseLine);
@@ -103,6 +124,14 @@ export class M3U8Parser {
         }
     }
 
+    /**
+     * Merges raw line data with existing playlist item data.
+     *
+     * @private
+     * @param {PlaylistItem} item - The playlist item to update.
+     * @param {ParsedLine | string} line - The line to merge with the playlist item.
+     * @returns {string} - The updated raw string.
+     */
     private mergeRaw(item: PlaylistItem, line: ParsedLine | string): string {
         if (typeof line === "string") {
             return item?.raw ? item.raw.concat(`\n${line}`) : `${line}`;
@@ -111,6 +140,14 @@ export class M3U8Parser {
         return item?.raw ? item.raw.concat(`\n${line.raw}`) : `${line.raw}`;
     }
 
+    /**
+     * Parses a single line from the playlist.
+     *
+     * @private
+     * @param {string} line - The raw line to parse.
+     * @param {number} index - The line index.
+     * @returns {ParsedLine} - The parsed line.
+     */
     parseLine(line: string, index: number): ParsedLine {
         return {
             index,
@@ -118,6 +155,13 @@ export class M3U8Parser {
         };
     }
 
+    /**
+     * Parses the header information from the raw playlist.
+     *
+     * @private
+     * @param {string} line - The raw header line.
+     * @returns {void}
+     */
     parseHeader(line: string): void {
         const supportedAttrs = [Attributes.X_TVG_URL, Attributes.URL_TVG];
         const attrs = new Map();
@@ -134,6 +178,15 @@ export class M3U8Parser {
             raw: line,
         };
     }
+
+    /**
+     * Handles the EXTGRP tag and updates the associated playlist item.
+     *
+     * @private
+     * @param {string} line - The raw EXTGRP line.
+     * @param {number} index - The index of the playlist item.
+     * @returns {void}
+     */
     private handleEXTGRP(line: string, index: number): void {
         const item = this.items.get(index);
         if (!item) {
@@ -153,6 +206,14 @@ export class M3U8Parser {
         );
     }
 
+    /**
+     * Handles the EXTVLCOPT tag and updates the HTTP options for the playlist item.
+     *
+     * @private
+     * @param {string} line - The raw EXTVLCOPT line.
+     * @param {number} index - The index of the playlist item.
+     * @returns {void}
+     */
     private handleEXTVLCOPT(line: string, index: number): void {
         const item = this.items.get(index);
 
@@ -173,6 +234,13 @@ export class M3U8Parser {
         );
     }
 
+    /**
+     * Handles the EXTINF tag and extracts relevant information for the playlist item.
+     *
+     * @private
+     * @param {ParsedLine} line - The parsed EXTINF line.
+     * @returns {PlaylistItem} - The parsed playlist item.
+     */
     private handleEXTINF(line: ParsedLine): PlaylistItem {
         return PlaylistItemValidator.parse({
             name: this.getName(line.raw),
@@ -205,6 +273,14 @@ export class M3U8Parser {
         });
     }
 
+    /**
+     * Retrieves the value of a specific attribute from a playlist line.
+     *
+     * @private
+     * @param {Attributes} name - The name of the attribute.
+     * @param {string} line - The line containing the attribute.
+     * @returns {string} - The value of the attribute.
+     */
     private getAttribute(name: Attributes, line: string): string {
         const regex = new RegExp(name + '="(.*?)"', "gi");
         const match = regex.exec(line);
@@ -212,12 +288,27 @@ export class M3U8Parser {
         return (match && match[1] ? match[1] : "")?.trimStart()?.trimEnd();
     }
 
+    /**
+     * Retrieves the name from the EXTINF line.
+     *
+     * @private
+     * @param {string} line - The raw EXTINF line.
+     * @returns {string} - The parsed name.
+     */
     private getName(line: string): string {
         const name = line?.split(/[\r\n]+/)?.shift()?.split(",")
             .pop()?.trimStart()?.trimEnd();
         return name || "";
     }
 
+    /**
+     * Retrieves the option value from a playlist line.
+     *
+     * @private
+     * @param {string} line - The raw line.
+     * @param {Options} name - The option name.
+     * @returns {string} - The option value.
+     */
     private getOption(line: string, name: Options): string {
         const regex = new RegExp(":" + name + "=(.*)", "gi");
         const match = regex.exec(line);
@@ -226,6 +317,14 @@ export class M3U8Parser {
             ? match[1].replace(/\"/g, "")
             : "";
     }
+
+    /**
+     * Retrieves the value from a line after the colon (e.g., for EXTGRP).
+     *
+     * @private
+     * @param {string} line - The raw line.
+     * @returns {string} - The extracted value.
+     */
     private getValue(line: string): string {
         const regex = new RegExp(":(.*)", "gi");
         const match = regex.exec(line);
@@ -235,10 +334,25 @@ export class M3U8Parser {
             : "";
     }
 
+    /**
+     * Retrieves the URL from the playlist line.
+     *
+     * @private
+     * @param {string} line - The raw line.
+     * @returns {string} - The URL.
+     */
     private getUrl(line: string): string {
         return line.split("|")[0] || "";
     }
 
+    /**
+     * Retrieves a parameter value from a playlist line (e.g., user-agent, referrer).
+     *
+     * @private
+     * @param {string} line - The raw line.
+     * @param {Parameters} name - The parameter name.
+     * @returns {string} - The parameter value.
+     */
     private getParameter(line: string, name: Parameters): string {
         const params = line.replace(/^(.*)\|/, "");
         const regex = new RegExp(name + "=(\\w[^&]*)", "gi");
@@ -248,11 +362,10 @@ export class M3U8Parser {
     }
 
     /**
-     * getPlaylist
-     * @description returns parsed playlist
-     * @example
-     * const playlist = parser.getPlaylist();
-     * @returns {Playlist} - returns parsed playlist
+     * Returns the entire parsed playlist object.
+     *
+     * @public
+     * @returns {Playlist} - The parsed playlist.
      */
     public getPlaylist(): Playlist {
         return {
@@ -263,12 +376,11 @@ export class M3U8Parser {
     }
 
     /**
-     * getPlaylistByGroup
-     * @description returns parsed playlist by group
-     * @param {string} group - group name
-     * @example
-     * const playlist = parser.getPlaylistByGroup("group");
-     * @returns {Playlist} - returns parsed playlist by group
+     * Returns the parsed playlist filtered by group.
+     *
+     * @public
+     * @param {string} group - The group name to filter by.
+     * @returns {Playlist} - The filtered playlist.
      */
     public getPlaylistByGroup(group: string): Playlist {
         const key = group.split("").join("-");
@@ -288,6 +400,13 @@ export class M3U8Parser {
         return playlist;
     }
 
+    /**
+     * Filters the playlist items based on the group name.
+     *
+     * @private
+     * @param {string} group - The group name to filter by.
+     * @returns {PlaylistItem[]} - The filtered playlist items.
+     */
     private getPlaylistItems(group: string): PlaylistItem[] {
         return Array.from(this.items.values()).filter((item) =>
             item?.group?.title?.toLowerCase().startsWith(group.toLowerCase())
@@ -295,12 +414,11 @@ export class M3U8Parser {
     }
 
     /**
-     * getPlaylistsByGroups
-     * @description returns parsed playlist by groups
-     * @param {string[]} groups - array of group names
-     * @example
-     * const playlist = parser.getPlaylistsByGroups(["group1", "group2"]);
-     * @returns {Playlist} - returns parsed playlist by groups
+     * Returns the parsed playlist filtered by multiple groups.
+     *
+     * @public
+     * @param {string[]} groups - An array of group names.
+     * @returns {Playlist} - The filtered playlist by multiple groups.
      */
     public getPlaylistsByGroups(groups: string[]): Playlist {
         const key = groups.join("-");
@@ -330,22 +448,20 @@ export class M3U8Parser {
     }
 
     /**
-     * playlistGroups
-     * @description returns array of group names
-     * @example
-     * const groups = parser.playlistGroups;
-     * @returns {string[]} - returns array of group names
+     * Returns an array of all group names from the playlist.
+     *
+     * @public
+     * @returns {string[]} - An array of group names.
      */
     public get playlistGroups(): string[] {
         return Array.from(this.groups);
     }
 
     /**
-     * write
-     * @description returns stringified playlist
-     * @example
-     * const playlist = parser.write();
-     * @returns {string} - returns stringified playlist
+     * Serializes the playlist into a string format.
+     *
+     * @public
+     * @returns {string} - The stringified playlist.
      */
     public write(): string {
         const playlist = this.getPlaylist();
@@ -354,12 +470,12 @@ export class M3U8Parser {
             `${playlist.items.map((item) => item.raw).join("\n")}`,
         );
     }
+
     /**
-     * updateItems
-     * @description Updates the playlist items
-     * @param {Map<number, PlaylistItem>} items - map of playlist items
-     * @example
-     * parser.updateItems(new Map());
+     * Updates the playlist items.
+     *
+     * @public
+     * @param {Map<number, PlaylistItem>} items - The new map of playlist items.
      * @returns {void}
      */
     public updateItems(items: Map<number, PlaylistItem>): void {
@@ -367,11 +483,10 @@ export class M3U8Parser {
     }
 
     /**
-     * updatePlaylist
-     * @description Updates the playlist
-     * @param {Playlist} playlist - playlist
-     * @example
-     * parser.updatePlaylist({ header: {}, items: [] });
+     * Updates the entire playlist.
+     *
+     * @public
+     * @param {Playlist} playlist - The new playlist object.
      * @returns {void}
      */
     public updatePlaylist(playlist: Playlist): void {
@@ -389,13 +504,12 @@ export class M3U8Parser {
     }
 
     /**
-     * fetchPlaylist
-     * @description Fetches m3u8 playlist from url
-     * @param {string} url - url to fetch m3u8 playlist
-     * @example
-     * parser.fetchPlaylist({ url: "http://example.com/playlist.m3u8" });
+     * Fetches an M3U8 playlist from a URL and parses it.
+     *
+     * @public
+     * @param {string} url - The URL of the playlist.
+     * @throws {Error} If the fetch operation fails.
      * @returns {Promise<void>}
-     * @throws {Error} - if failed to fetch playlist
      */
     public async fetchPlaylist({ url }: { url: string }): Promise<void> {
         const response = await fetch(url);
@@ -409,11 +523,10 @@ export class M3U8Parser {
     }
 
     /**
-     * filterPlaylist
-     * @description Filters the playlist by group
-     * @param {string[]} filters - array of group names
-     * @example
-     * parser.filterPlaylist(["group1", "group2"]);
+     * Filters the playlist by specified group names.
+     *
+     * @public
+     * @param {string[]} filters - An array of group names to filter by.
      * @returns {void}
      */
     public filterPlaylist(
