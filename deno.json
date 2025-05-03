@@ -13,6 +13,12 @@
         "zod": "npm:zod@^3.24.3"
     },
     "exports": "./src/index.ts",
+    "publish": {
+        "exclude": [
+            ".github",
+            ".vscode"
+        ]
+    },
     "lint": {
         "rules": {
             "tags": [
