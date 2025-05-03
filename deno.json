@@ -9,6 +9,7 @@
         "publish": "deno task fix && deno task test && deno publish"
     },
     "imports": {
+        "@hongminhee/deno-mock-fetch": "jsr:@hongminhee/deno-mock-fetch@^0.3.2",
         "@std/assert": "jsr:@std/assert@1",
         "zod": "npm:zod@^3.24.3"
     },

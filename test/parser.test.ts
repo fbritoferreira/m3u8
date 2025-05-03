@@ -1,7 +1,7 @@
-import type { PlaylistItem } from "./types.ts";
-import { M3U8Parser } from "./parser.test.ts";
+import type { PlaylistItem } from "./../src/types.ts";
+import { M3U8Parser } from "./../src/index.ts";
 import { assertEquals } from "@std/assert";
-import * as mf from "../vendor/deno.land/x/mock_fetch@0.3.0/mod.ts";
+import * as mf from "@hongminhee/deno-mock-fetch";
 
 const sharedPlaylist = `#EXTM3U
 #EXTINF:-1 tvg-id="ABC" group-title="News" tvg-logo="http://example.com/logo.png", News Channel
