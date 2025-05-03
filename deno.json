@@ -1,0 +1,43 @@
+{
+    "name": "@fbritoferreira/m3u8",
+    "version": "1.1.0",
+    "license": "MIT",
+    "tasks": {
+        "test": "deno test -A",
+        "dev": "deno test -A --watch",
+        "fix": "deno lint && deno fmt && deno publish --allow-dirty --dry-run",
+        "publish": "deno task fix && deno task test && deno publish"
+    },
+    "imports": {
+        "@std/assert": "jsr:@std/assert@1",
+        "zod": "npm:zod@^3.24.3"
+    },
+    "exports": "./src/index.ts",
+    "publish": {
+        "exclude": [
+            "test/"
+        ]
+    },
+    "lint": {
+        "exclude": [
+            "./public/",
+            "./dist/"
+        ],
+        "rules": {
+            "tags": [
+                "recommended"
+            ],
+            "include": [
+                "explicit-function-return-type",
+                "explicit-module-boundary-types",
+                "eqeqeq",
+                "single-var-declarator",
+                "verbatim-module-syntax"
+            ]
+        }
+    },
+    "fmt": {
+        "indentWidth": 4,
+        "useTabs": false
+    }
+}
